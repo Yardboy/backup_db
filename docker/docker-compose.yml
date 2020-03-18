@@ -21,16 +21,5 @@ services:
     volumes:
       - backup_db_bundle:/bundle
 
-  backup_db_dockerhost:
-    image: qoomon/docker-host
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    restart: on-failure
-    networks:
-      - backend
-      - frontend
-
-
 volumes:
   backup_db_bundle:

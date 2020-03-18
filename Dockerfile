@@ -4,7 +4,8 @@ LABEL app-name="backup_db"
 
 RUN apt-get update -qq && apt-get install -y \
   curl \
-  vim
+  vim \
+  mariadb-client
 
 # Create and set the working directory
 ENV APP_HOME /app

@@ -1,7 +1,7 @@
 USER=db_user_name
 PW=db_password
 DB=db_name
-FOLDER=~/backup_db/backups
+FOLDER=~/backup_db/backup_files
 TS=`date +"%Y-%m-%d-%H-%M-%S"`
 FILE=$FOLDER/db-backup-$TS.sql
 

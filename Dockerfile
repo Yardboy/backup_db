@@ -14,3 +14,8 @@ WORKDIR $APP_HOME
 
 # COPY app to container
 COPY . $APP_HOME
+
+# Change executable bits on necessary scripts
+RUN chmod +x $APP_HOME/docker/entrypoint.sh
+RUN chmod +x $APP_HOME/bin/dev
+RUN chmod +x $APP_HOME/backup_db.rb

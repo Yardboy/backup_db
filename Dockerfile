@@ -14,7 +14,3 @@ WORKDIR $APP_HOME
 
 # COPY app to container
 COPY . $APP_HOME
-
-# Add RAILS_ENV for env dependent tasks
-ARG RAILS_ENV
-ENV RAILS_ENV ${RAILS_ENV}

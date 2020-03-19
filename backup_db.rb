@@ -6,63 +6,73 @@ class BackupDb
   require 'fileutils'
   require 'aws-sdk-s3'
 
-  CUSTOMERS = %w[tomc roofer].freeze
+  REGION = 'us-east-1'.freeze
+  CUSTOMER = 'lbk'.freeze
+  KEEP_FILES = 100
+  BACKUP_FOLDER = 'backup_files'.freeze
 
   class NoAWSKeysError < StandardError; end
 
   attr_reader :customer
 
-  class << self
-    def customers
-      CUSTOMERS.map { |key| Customer.new(key) }
-    end
-  end
-
-  def initialize(customer)
-    @customer = customer
+  def initialize
+    @customer = Customer.new(CUSTOMER)
     puts "Initializing backup for #{customer.key.upcase}"
     configure_customer
     validate_aws_keys
     configure_aws
-    puts "Looking in bucket #{customer.bucket}"
+    puts "Uploading to bucket #{customer.bucket}"
   end
 
-  def download_latest
+  def upload_latest
     ensure_backup_folder
-    puts "Downloading latest file #{latest_backup_file.key}"
+    puts "Uploading latest file #{latest_backup_file}"
     begin
-      s3_client.get_object(bucket: customer.bucket, key: latest_backup_file.key, response_target: backup_path)
+      stream_file_upload
       puts 'Success'
-    rescue StandardError
-      puts 'Error downloading file'
+    rescue StandardError => e
+      puts 'Error uploading file'
+      puts e
     end
+    remove_older_files
   end
 
   private
 
-  def ensure_backup_folder
-    puts 'Ensuring folder exists'
-    FileUtils.mkdir_p backup_folder
-  end
-
-  def backup_folder
-    "backup_files/#{customer.key}/"
-  end
-
-  def backup_path
-    "#{backup_folder}/#{latest_backup_file.key}"
-  end
-
-  def latest_backup_file
-    @latest_backup_file ||= list_bucket.max_by(&:last_modified)
+  def remove_older_files
+    Array(list_bucket.sort_by(&:key).reverse[KEEP_FILES..]).each do |obj|
+      puts "Removing #{obj.key}"
+      s3_client.delete_object(bucket: customer.bucket, key: obj.key)
+    end
   end
 
   def list_bucket
-    files = nil
+    objects = nil
     s3_client.list_objects(bucket: customer.bucket).each do |response|
-      files = response.contents
+      objects = response.contents
     end
-    files
+    objects
+  end
+
+  def stream_file_upload
+    File.open(backup_path, 'rb') do |file|
+      s3_client.put_object(bucket: customer.bucket, key: latest_backup_file, body: file)
+    end
+  end
+
+  def ensure_backup_folder
+    puts 'Ensuring folder exists'
+    FileUtils.mkdir_p BACKUP_FOLDER
+  end
+
+  def backup_path
+    @backup_path ||= Dir["#{BACKUP_FOLDER}/*"].max_by { |f| File.mtime(f) }
+  end
+
+  def latest_backup_file
+    return nil if backup_path.nil?
+
+    File.basename(backup_path)
   end
 
   def configure_aws
@@ -70,7 +80,7 @@ class BackupDb
       access_key_id: customer.access_key,
       secret_access_key: customer.secret_key,
       force_path_style: true,
-      region: 'us-east-1'
+      region: REGION
     )
   end
 
@@ -92,7 +102,5 @@ class BackupDb
   end
 end
 
-BackupDb.customers.each do |customer|
-  backup_db = BackupDb.new(customer)
-  backup_db.download_latest
-end
+backup_db = BackupDb.new
+backup_db.upload_latest

@@ -1,6 +1,6 @@
-USER=db_user_name
-PW=db_password
-DB=db_name
+USER=$1
+PW=$2
+DB=$3
 FOLDER=~/backup_db/backup_files
 TS=`date +"%Y-%m-%d-%H-%M-%S"`
 FILE=$FOLDER/db-backup-$TS.sql

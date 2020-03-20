@@ -1,7 +1,7 @@
 USER=$1
 PW=$2
 DB=$3
-FOLDER=~/backup_db/backup_files
+FOLDER=~/s3backups/backup_files
 TS=`date +"%Y-%m-%d-%H-%M-%S"`
 FILE=$FOLDER/db-backup-$TS.sql
 

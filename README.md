@@ -1,12 +1,12 @@
-# README
+# README - S3backups Utility Container
 
-This is a simple docker-compose container with a ruby script to
+This is a simple docker/docker-compose container with a ruby script to
 upload the latest backup file (created by included docker_backup.sh
 shell script or otherwise) from a local folder into an S3 bucket.
 
 How to use:
 
-* Configure and install backup_db.sh into crontab
+* Configure and install backup_db.sh into crontab, or otherwise setup for backup files to be placed in /backup_files folder
 
 * Update `CUSTOMER` constant in `s3backups.rb` with customer key
 

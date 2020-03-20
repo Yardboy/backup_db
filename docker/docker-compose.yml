@@ -1,25 +1,25 @@
 version: "3.7"
 
 services:
-  backup_db:
+  s3backups:
     build:
       context: ../
     entrypoint: /app/docker/entrypoint.sh
-    command: bash -c "./backup_db.rb"
-    container_name: "backup_db"
+    command: bash -c "./s3backups.rb"
+    container_name: "s3backups"
     volumes:
       - ../:/app
-      - backup_db_bundle:/bundle
+      - s3backups_bundle:/bundle
     env_file: ../.env
     environment:
       BUNDLE_PATH: /bundle
       BUNDLE_SILENCE_ROOT_WARNING: 1
 
-  backup_db_bundle:
+  s3backups_bundle:
     image: busybox
-    container_name: "backup_db_bundle"
+    container_name: "s3backups_bundle"
     volumes:
-      - backup_db_bundle:/bundle
+      - s3backups_bundle:/bundle
 
 volumes:
-  backup_db_bundle:
+  s3backups_bundle:

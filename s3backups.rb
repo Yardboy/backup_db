@@ -2,7 +2,7 @@
 
 Customer = Struct.new(:key, :bucket, :access_key, :secret_key)
 
-class BackupDb
+class S3backups
   require 'fileutils'
   require 'aws-sdk-s3'
 
@@ -102,5 +102,5 @@ class BackupDb
   end
 end
 
-backup_db = BackupDb.new
-backup_db.upload_latest
+s3backups = S3backups.new
+s3backups.upload_latest

@@ -1,0 +1,5 @@
+# this is the MYSQL local defaults file which has the MySQL credentials
+# this file shoudl be located in ~/.mysql.defaults
+[client]
+user=db-user
+password=db-pw

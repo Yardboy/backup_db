@@ -1,0 +1,4 @@
+# this is the AWS default config file, which for our purposes sets the region
+# this file should be located in: ~/.aws/config
+[default]
+region = us-east-1

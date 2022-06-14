@@ -13,7 +13,6 @@
 !/log/.keep
 !/tmp/.keep
 
-/.env
 /backup_files/*
 /log_files/*
 !log_files/.git-keep 

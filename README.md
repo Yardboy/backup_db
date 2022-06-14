@@ -1,19 +1,44 @@
-# README - S3backups Utility Container
+# README - S3backups Utility Scripts
 
-This is a simple docker/docker-compose container with a ruby script to
-upload the latest backup file (created by included docker_backup.sh
-shell script or otherwise) from a local folder into an S3 bucket.
+This is a simple set of scripts to dump a MySQL database to a folder
+and sync that folder to an AWS S3 bucket.
 
-How to use:
+# Setup
+Run install script to set up folders and configuration files
 
-* Configure and install backup_db.sh into crontab, or otherwise setup for backup files to be placed in /backup_files folder
+`~/s3backups/bin/install.sh`
 
-* Update `CUSTOMER` constant in `s3backups.rb` with customer key
+# Configure
+Update `~/.aws/config` with appropriate region and bucket
 
-* Configure a `.env` file for the customer key according to `.env.example`
+Update `~/.aws/credentials` with appropriate aws credentials
 
-* Run `bin/dev build` once to build the container
+Update `~/.mysql.defaults` with appropriate MySQL credentials
 
-* Run `bin/dev up` any time to run the backup upload
+Make all of these files visible to user only
 
-* Run `bin/dev bash` to enter the container at a bash prompt
+`chmod 600 ~/.aws/*`
+
+`chomd 700 ~/.aws`
+
+`chmod 600 ~/.mysql.defaults`
+
+# Use
+
+## CRON backup script
+
+Set up cron job to run the `backup_db.sh` script
+
+`0 * * * * /bin/bash -l -c "/home/pragmatim/s3backups/bin/backup_db.sh DB" >> /home/pragmatim/s3backups/log_files/backup.log 2>&1`
+
+*where **DB** is the name of the database to backup*
+
+## CRON sync script
+
+Set up cron job to run the `aws_sync.sh` script
+
+`15 */4 * * * /bin/bash -l -c "/home/pragmatim/s3backups/bin/aws_sync.sh PROFILE BUCKET" >> /home/pragmatim/s3backups/log_files/sync.log 2>&1`
+
+*where **PROFILE** is the `[profile]` value in `~/.aws/config`*
+
+*and **BUCKET** is the S3 bucket you are syncing to*

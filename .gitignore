@@ -4,15 +4,9 @@
 # or operating system, you probably want to add a global ignore instead:
 #   git config --global core.excludesfile '~/.gitignore_global'
 
-# Ignore bundler config.
-/.bundle
-
-# Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
-
-/backup_files/*
+# Ignore all logfiles and backup files, keep the folders.
 /log_files/*
 !log_files/.git-keep 
+
+/backup_files/*
+!backup_files/.git-keep 
